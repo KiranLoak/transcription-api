@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "change-me"
     ADMIN_BOOTSTRAP_SECRET: str = "local-dev-bootstrap"
-    BASE_URL: str = "http://localhost:8000"
+    BASE_URL: str = "https://transcription-api-c92c.onrender.com"
 
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/transcription_db"
 
