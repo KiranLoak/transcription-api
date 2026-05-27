@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>API Key Management</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: 1rem; }
+    input, button { width: 100%; padding: 0.5rem; margin-top: 0.25rem; box-sizing: border-box; }
+    pre { background: #f4f4f4; padding: 1rem; overflow-x: auto; }
+    .warn { color: #b45309; }
+  </style>
+</head>
+<body>
+  <h1>Transcription API — Keys</h1>
+  <p>Bootstrap your first API key (admin secret from <code>ADMIN_BOOTSTRAP_SECRET</code>).</p>
+  <form id="form">
+    <label>Admin secret <input name="secret" type="password" required /></label>
+    <label>Key name <input name="name" value="my-agent-key" /></label>
+    <button type="submit">Create API key</button>
+  </form>
+  <p id="status"></p>
+  <pre id="out" hidden></pre>
+  <script>
+    document.getElementById('form').onsubmit = async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const res = await fetch('/api/v1/keys/bootstrap', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Secret': fd.get('secret'),
+        },
+        body: JSON.stringify({ name: fd.get('name') }),
+      });
+      const data = await res.json();
+      const out = document.getElementById('out');
+      const st = document.getElementById('status');
+      if (!res.ok) {
+        st.textContent = data.error?.message || 'Failed';
+        out.hidden = true;
+        return;
+      }
+      st.innerHTML = '<span class="warn">Copy your key now — it will not be shown again.</span>';
+      out.hidden = false;
+      out.textContent = JSON.stringify(data, null, 2);
+    };
+  </script>
+</body>
+</html>

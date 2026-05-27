@@ -1,0 +1,41 @@
+# Agent-First Transcription API
+
+> Async REST API for speaker-diarized video/audio transcription (Whisper + Chirp 3 + Gemini).
+
+## Base URL
+Replace with your deployment URL, e.g. https://your-app.up.railway.app
+
+## Authentication
+Bearer token: `Authorization: Bearer tx_<your-api-key>`
+Create a key: `POST /api/v1/keys/bootstrap` with header `X-Admin-Secret: <ADMIN_BOOTSTRAP_SECRET>`
+
+## Quick start (agent workflow)
+1. `GET /health` — verify service is alive
+2. `POST /api/v1/transcriptions/url` with `{"url":"https://..."}` OR `POST /api/v1/transcriptions` multipart file
+3. Receive `job_id` and `status_url` (HTTP 202)
+4. Poll `GET /api/v1/transcriptions/{job_id}` every 2-5s until `status` is `completed` or `failed`
+5. `GET /api/v1/transcriptions/{job_id}/result` for full `TranscriptionResult` JSON
+6. `GET /api/v1/usage` for quota and billing
+
+## OpenAPI
+/openapi.json — full typed schema with examples
+
+## MCP
+Run: `python -m mcp_server` — exposes tools: submit_transcription_url, get_transcription_status, get_transcription_result, get_usage
+
+## Error format
+All errors: `{"error":{"code":"...","message":"...","retryable":bool,"suggested_action":"...","docs_url":"..."}}`
+Catalog: /docs/errors
+
+## Limits
+- Max upload: 100MB
+- Default rate: 30 RPM per key, 120 RPM global
+- Default quota: 500 jobs/month per key
+
+## Pricing
+~$0.05 per job billed (see PRICING.md). Pipeline cost $0.02-0.08 upstream.
+
+## Discovery
+- /.well-known/agent.json
+- /.well-known/ai-plugin.json
+- /llms.txt (this file)

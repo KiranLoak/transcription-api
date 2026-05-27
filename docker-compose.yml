@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: transcription_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: .
+    entrypoint: ["sh", "/app/entrypoint.sh"]
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./long-memory-481406-i3-a87ef482f961.json:/app/long-memory-481406-i3-a87ef482f961.json:ro
+      - ./entrypoint.sh:/app/entrypoint.sh:ro
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/transcription_db
+      BASE_URL: http://localhost:8000
+      GCP_PROJECT_ID: long-memory-481406-i3
+      GOOGLE_APPLICATION_CREDENTIALS: /app/long-memory-481406-i3-a87ef482f961.json
+      ADMIN_BOOTSTRAP_SECRET: local-dev-bootstrap
+      CACHE_DIR: data/cache
+      UPLOAD_DIR: data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
