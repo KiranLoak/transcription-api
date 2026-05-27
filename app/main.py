@@ -1,6 +1,7 @@
 """FastAPI application entrypoint."""
 
 from __future__ import annotations
+from app.core.gcp import setup_gcp_credentials
 
 from pathlib import Path
 
@@ -22,6 +23,7 @@ STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
 def create_app() -> FastAPI:
+    setup_gcp_credentials()
     app = FastAPI(
         title=settings.PROJECT_NAME,
         version="1.0.0",
