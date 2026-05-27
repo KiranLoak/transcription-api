@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     GCP_PROJECT_ID: str = ""
     GCP_LOCATION: str = "us-central1"
     GOOGLE_APPLICATION_CREDENTIALS: str = ""
+    GCP_SERVICE_ACCOUNT_JSON: str = ""
 
     UPLOAD_DIR: str = "data/uploads"
     CACHE_DIR: str = "data/cache"
